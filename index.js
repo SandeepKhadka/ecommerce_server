@@ -4,20 +4,13 @@ const bcrypt = require("bcrypt");
 const Product = require("./model/Product.js");
 const User = require("./model/User.js");
 const handleServerError = require("./middleware/handleServerError.js");
+const { checkAuthorization } = require("./middleware/auth.js");
+const { login } = require("./controller/auth.js");
 require("./config/database.js");
 const app = express();
 
 app.use(express.json()); // global middleware, runs in every routes, sets up data in request.body
 
-/* 
-
-  Types of Validation
-
-    1) Client side validation
-    2) server side validation
-    3) database validation
-
-*/
 
 const signSchema = Joi.object({
   name: Joi.string().alphanum().min(3).max(30).required(),
@@ -25,37 +18,9 @@ const signSchema = Joi.object({
   email: Joi.string().email().required(),
 });
 
-const loginSchema = Joi.object({
-  password: Joi.string().alphanum().min(8).max(30).required(),
-  email: Joi.string().email().required(),
-});
 
-app.post("/api/login", async (req, res, next) => {
-  const { error } = loginSchema.validate(req.body, {
-    abortEarly: false,
-    stripUnknown: true,
-  });
-  if (error) {
-    let errors = error.details.map((el) => {
-      return {
-        msg: el.message,
-        params: el.context.key,
-      };
-    });
-    return res.send(errors);
-  }
 
-  let user = await User.findOne({ email: req.body.email });
-  if (!user) {
-    return res.status(400).send({ msg: "User not found" });
-  }
-  let matched = await bcrypt.compare(req.body.password, user.password)
-  if(matched){
-    res.send({msg : "logged in"});
-  }else{
-    res.status(401).send({msg : "Invalid credentials"})
-  }
-});
+app.post("/api/login", login);
 
 app.post("/api/signup", async (req, res, next) => {
   // console.log(req.body);
@@ -93,11 +58,13 @@ app.post("/api/signup", async (req, res, next) => {
   }
 });
 
-app.post("/api/products", async (req, res, next) => {
+app.post("/api/products", checkAuthorization, async (req, res, next) => {
   try {
-    let product = await Productt.create({
+    
+    let product = await Product.create({
       title: req.body.title,
       price: req.body.price,
+      createdBy: req.user,
     });
     console.log(product);
     res.send(product);

@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
+const ObjectId = Schema.ObjectId;
 
 const ProductSchema = new Schema({
   title: {
@@ -11,6 +12,10 @@ const ProductSchema = new Schema({
     type: Number,
     required: true,
   },
+  createdBy: {
+    ref : "User",
+    type : ObjectId
+  }
 });
 
 const Product = mongoose.model("Product", ProductSchema);
