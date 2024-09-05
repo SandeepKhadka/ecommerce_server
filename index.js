@@ -1,83 +1,19 @@
 const express = require("express");
-const Joi = require("joi");
-const bcrypt = require("bcrypt");
-const Product = require("./model/Product.js");
-const User = require("./model/User.js");
 const handleServerError = require("./middleware/handleServerError.js");
-const { checkAuthorization } = require("./middleware/auth.js");
-const { login } = require("./controller/auth.js");
 require("./config/database.js");
+const authRoutes = require("./routes/auth.js");
+const productRoutes = require("./routes/product.js");
 const app = express();
 
 app.use(express.json()); // global middleware, runs in every routes, sets up data in request.body
 
 
-const signSchema = Joi.object({
-  name: Joi.string().alphanum().min(3).max(30).required(),
-  password: Joi.string().alphanum().min(8).max(30).required(),
-  email: Joi.string().email().required(),
-});
+app.use(authRoutes)
+app.use(productRoutes)
+// app.use()
 
 
 
-app.post("/api/login", login);
-
-app.post("/api/signup", async (req, res, next) => {
-  // console.log(req.body);
-  // let {name, email, password} = req.body
-  // console.log(name, email, password);
-  try {
-    // const value = await signSchema.validateAsync(req.body, {
-    //   abortEarly: false,
-    //   stripUnknown: true,
-    // });
-    // let userData = req.body
-    let hashedPassword = await bcrypt.hash(req.body.password, 10);
-    console.log(hashedPassword);
-
-    let user = await User.create({ ...req.body, password: hashedPassword });
-    console.log(user);
-    res.send(user);
-  } catch (error) {
-    console.log(error);
-    // let errors = error.details.map((el) => {
-    //   return {
-    //     msg: el.message,
-    //     params: el.context.key,
-    //   };
-    // });
-
-    // console.error(error.name);
-    // if (error.name === "ValidationError") {
-    //   return res.status(400).send({
-    //     msg: "Bad request",
-    //     error: error.errors,
-    //   });
-    // }
-    next(error);
-  }
-});
-
-app.post("/api/products", checkAuthorization, async (req, res, next) => {
-  try {
-    
-    let product = await Product.create({
-      title: req.body.title,
-      price: req.body.price,
-      createdBy: req.user,
-    });
-    console.log(product);
-    res.send(product);
-  } catch (error) {
-    console.error(error);
-    next(error);
-  }
-});
-
-app.get("/api/products", async (req, res) => {
-  let products = await Product.find();
-  res.status(200).send(products);
-});
 
 app.use((req, res) => {
   res.status(404).send({ msg: "Resource not found" });
