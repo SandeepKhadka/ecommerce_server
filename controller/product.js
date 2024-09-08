@@ -1,9 +1,42 @@
 const Product = require("../model/Product");
 
-const getProducts = async (req, res) => {
-  let products = await Product.find();
-  res.status(200).send(products);
+const getProducts = async (req, res, next) => {
+  console.log(req.query);
+  let searchTerm = req.query.searchTerm
+  let priceFrom = parseFloat(req.query.priceFrom) || 0
+  // let priceFrom = parseFloat(req.query.priceFrom) || 0
+  let priceTo = parseFloat(req.query.priceTo) || 9999999999999999
+  try{
+    // let products = await Product.find({title : RegExp(searchTerm, "i")});
+    // let products = await Product.find({price : {$gt : priceFrom}});
+    // let products = await Product.find({price : {$lt : priceTo}});
+
+    let products = await Product.find({
+      $and: [
+        {price: {$gt : priceFrom}},
+        {price: {$lt : priceTo}},
+        {title : RegExp(searchTerm, "i")}
+      ]
+    }, {description : 0}).populate("createdBy", "name email")
+
+    // let products = await Product.find();
+    res.status(200).send(products);
+  }catch(err){
+    next(err)
+  }
+  
 };
+
+const getSingleProduct = async (req, res, next) =>{
+
+  try{
+    let product = await Product.findOne({ _id: req.params.id }).populate("createdBy", "name email");
+    res.send(product)
+  }catch(err){
+    next(err)
+  }
+
+}
 
 const storeProduct = async (req, res, next) => {
   try {
@@ -65,9 +98,11 @@ const deleteProduct = async (req, res, next) => {
   res.status(400).send({ msg: "Product not found" });
 };
 
+
 module.exports = {
   getProducts,
   storeProduct,
   updateProduct,
   deleteProduct,
+  getSingleProduct
 };
