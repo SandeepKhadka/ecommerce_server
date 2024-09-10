@@ -13,6 +13,7 @@ const ProductSchema = new Schema({
     required: true,
   },
   description: String,
+  image : String,
   createdBy: {
     ref : "User",
     type : ObjectId

@@ -4,10 +4,12 @@ require("./config/database.js");
 const authRoutes = require("./routes/auth.js");
 const productRoutes = require("./routes/product.js");
 const orderRoutes = require("./routes/order.js");
+const fileUpload = require("express-fileupload")
 const app = express();
 
 app.use(express.json()); // global middleware, runs in every routes, sets up data in request.body
-
+app.use(fileUpload())
+app.use(express.static('uploads'))
 
 app.use(authRoutes)
 app.use(productRoutes)
