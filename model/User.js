@@ -34,7 +34,8 @@ const UserSchema = new Schema({
   role:{
     type: String,
     required:true,
-    enum: [SELLER, BUYER]
+    enum: [SELLER, BUYER],
+    default: BUYER
   }
 });
 
