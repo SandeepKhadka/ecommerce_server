@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { SELLER, BUYER } = require("../constants/product");
+const { SELLER, BUYER, ADMIN } = require("../constants/product");
 
 const Schema = mongoose.Schema;
 

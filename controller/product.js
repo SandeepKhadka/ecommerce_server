@@ -50,13 +50,13 @@ const getSingleProduct = async (req, res, next) => {
 
 const storeProduct = async (req, res, next) => {
   try {
-    let destination = path.join(path.resolve(), "uploads",req.files.image.name)
-    req.files.image.mv(destination)
+    // let destination = path.join(path.resolve(), "uploads",req.files.image.name)
+    // req.files.image.mv(destination)
 
     let product = await Product.create({
       ...req.body,
       createdBy: req.user,
-      image : req.files.image.name
+      // image : req.files.image.name
     });
     console.log(product);
     res.send(product);

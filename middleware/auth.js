@@ -1,14 +1,14 @@
 var jwt = require("jsonwebtoken");
-const { SELLER, BUYER } = require("../constants/product");
+const { SELLER, BUYER, ADMIN } = require("../constants/product");
 
 const checkAuthorization = (req, res, next) => {
-  let token = req.headers.authorization?.replace("Bearer ", "");
+  // let token = req.headers.authorization?.replace("Bearer ", "");
+  let token = req.body.token;
   let isloggedIn = false;
 
   try {
     var decoded = jwt.verify(token, "shhhhh");
     req.user = decoded;
-    //   console.log(req.user);
 
     isloggedIn = true;
   } catch {}
@@ -42,8 +42,21 @@ const isBuyer = (req, res, next) => {
   }
 };
 
+const isAdmin = (req, res, next) => {
+  if (req.user.role === ADMIN) {
+    next();
+    console.log(req.user.role);
+    
+  } else {
+    res.status(403).send({
+      msg: "Access denied",
+    });
+  }
+};
+
 module.exports = {
   checkAuthorization,
   isSeller,
-  isBuyer
+  isBuyer,
+  isAdmin
 };
