@@ -7,7 +7,7 @@ const getProducts = async (req, res, next) => {
   let priceFrom = parseFloat(req.query.priceFrom) || 0;
   // let priceFrom = parseFloat(req.query.priceFrom) || 0
   let priceTo = parseFloat(req.query.priceTo) || 9999999999999999;
-  let pageProduct = parseInt(req.query.pageProduct) || 2;
+  let pageProduct = parseInt(req.query.pageProduct) || 10;
   let page = parseInt(req.query.page) || 1;
   try {
     // let products = await Product.find({title : RegExp(searchTerm, "i")});
@@ -50,13 +50,19 @@ const getSingleProduct = async (req, res, next) => {
 
 const storeProduct = async (req, res, next) => {
   try {
-    // let destination = path.join(path.resolve(), "uploads",req.files.image.name)
-    // req.files.image.mv(destination)
+    if (req.files) {
+      let destination = path.join(
+        path.resolve(),
+        "uploads",
+        req.files.image.name
+      );
+      req.files.image.mv(destination);
+    }
 
     let product = await Product.create({
       ...req.body,
       createdBy: req.user,
-      // image : req.files.image.name
+      image : req.files.image.name
     });
     console.log(product);
     res.send(product);

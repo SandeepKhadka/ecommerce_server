@@ -2,8 +2,8 @@ var jwt = require("jsonwebtoken");
 const { SELLER, BUYER, ADMIN } = require("../constants/product");
 
 const checkAuthorization = (req, res, next) => {
-  // let token = req.headers.authorization?.replace("Bearer ", "");
-  let token = req.body.token;
+  let token = req.headers.authorization?.replace("Bearer ", "");
+  // let token = req.body.token;
   let isloggedIn = false;
 
   try {
