@@ -24,7 +24,7 @@ const getProducts = async (req, res, next) => {
       .skip((page - 1) * pageProduct)
       .limit(pageProduct)
       .countDocuments();
-    let products = await Product.find(filterOptions, { description: 0 })
+    let products = await Product.find(filterOptions)
       .populate("createdBy", "name email")
       .skip((page - 1) * pageProduct)
       .limit(pageProduct);
@@ -62,7 +62,7 @@ const storeProduct = async (req, res, next) => {
     let product = await Product.create({
       ...req.body,
       createdBy: req.user,
-      image : req.files.image.name
+      image: req.files.image.name,
     });
     console.log(product);
     res.send(product);
@@ -80,9 +80,23 @@ const updateProduct = async (req, res, next) => {
       if (req.user._id !== product.createdBy.toString()) {
         return res.status(403).send({ msg: "Permission denied" });
       }
+
+      let imageName = product.image;
+      if (req.files && req.files.image) {
+        let destination = path.join(
+          path.resolve(),
+          "uploads",
+          req.files.image.name
+        );
+        await req.files.image.mv(destination);
+        imageName = req.files.image.name;
+      }
       let updatedProduct = await Product.findByIdAndUpdate(
         req.params.id,
-        req.body,
+        {
+          ...req.body,
+          image: imageName,
+        },
         {
           new: true,
           runValidators: true,

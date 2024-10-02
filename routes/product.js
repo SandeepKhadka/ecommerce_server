@@ -13,6 +13,8 @@ router.delete("/api/products/:id", checkAuthorization, isSeller, deleteProduct);
 
 
 router.post("/api/admin/products", checkAuthorization, isAdmin, storeProduct);
+router.put("/api/admin/products/:id", checkAuthorization, isAdmin, updateProduct);
+router.delete("/api/admin/products/:id", checkAuthorization, isAdmin, deleteProduct);
 
 
 module.exports = router
