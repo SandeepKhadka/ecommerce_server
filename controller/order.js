@@ -12,9 +12,13 @@ const getOrders = async (req, res, next) => {
 
 const storeOrder = async (req, res, next) => {
   try {
+    const {products : orderProducts, shipping_address, paymentMethod} = req.body
+    if(!shipping_address && !paymentMethod){
+      res.status(400).send("Shipping details and payment method is required")
+    }
     let products = []
-    for(let index = 0; index < req.body.products.length; index++){
-        let element = req.body.products[index]
+    for(let index = 0; index < orderProducts.length; index++){
+        let element = orderProducts[index]
         
         let db_product = await Product.findOne({_id : element._id})
         // console.log(db_product);
@@ -27,7 +31,9 @@ const storeOrder = async (req, res, next) => {
     console.log(products);
     let orders = await Order.create({
         products,
-        createdBy: req.user._id
+        createdBy: req.user._id,
+        shipping_address,
+        paymentMethod
     })
     
     

@@ -38,6 +38,43 @@ const OrderSchema = new Schema({
     type: ObjectId,
     required: true,
   },
+  shipping_address: {
+    full_name: {
+      type: String,
+      required: true,
+    },
+    address: {
+      type: String,
+      required: true,
+    },
+    city: {
+      type: String,
+      required: true,
+    },
+    postal_code: {
+      type: String,
+      required: true,
+    },
+    country: {
+      type: String,
+      required: true,
+    },
+  },
+  paymentMethod: {
+    type: String,
+    enum: ["COD", "paypal"],
+    required: true,
+  },
+  paymentStatus: {
+    type: String,
+    enum: ["Paid", "Unpaid"],
+    default: "Unpaid",
+  },
+  orderStatus: {
+    type: String,
+    enum: ["Pending", "Shipped", "Delivered", "Cancelled"],
+    default: "Pending",
+  },
 });
 
 const Order = mongoose.model("Order", OrderSchema);
