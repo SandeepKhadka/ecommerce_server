@@ -5,6 +5,9 @@ const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
 const OrderSchema = new Schema({
+  order_id : {
+    type: String,
+  },
   products: {
     type: [
       {

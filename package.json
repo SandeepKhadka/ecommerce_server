@@ -1,7 +1,10 @@
 {
   "dependencies": {
+    "@paypal/checkout-server-sdk": "^1.0.3",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "env": "^0.0.2",
     "express": "^4.19.2",
     "express-fileupload": "^1.5.1",
     "joi": "^17.13.3",
